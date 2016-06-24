@@ -1,0 +1,15 @@
+{
+  "github":
+    {
+      "oauth_token": "some token"
+    },
+  "files":
+    [
+      "changelog.xml"
+    ],
+  "repos":
+    [
+      "your_repo/here"
+    ]
+}
+
