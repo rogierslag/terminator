@@ -19,7 +19,7 @@ var server = app.listen(8543, function () {
 // Check whether we are running and if yes return ok
 function checkHealth(req, res) {
   res.writeHead(200, 'OK');
-  res.write('Si?');
+  res.write('Boom!');
   res.end();
   console.log('Processed successful healthcheck');
   return;
@@ -32,9 +32,11 @@ function checkPayload(req, res) {
     console.log("Github test payload");
     var validRepo = config.get('repos').indexOf(req.body.repository.full_name.toLowerCase()) > -1;
     if ( validRepo ) {
-      res.status(200).write('Well Github, I love you too!').end();
+      res.status(200).write('Well Github, I love you too!');
+      res.end();
     } else {
-      res.status(403).write('This repository is not configured for Terminator').end();
+      res.status(403).write('This repository is not configured for Terminator');
+      res.end();
     }
     return;
   }
