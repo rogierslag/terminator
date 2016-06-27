@@ -5,6 +5,12 @@ var config = require('config');
 var bodyParser = require('body-parser');
 var request = require("request");
 
+if (typeof String.prototype.endsWith !== 'function') {
+    String.prototype.endsWith = function(suffix) {
+        return this.indexOf(suffix, this.length - suffix.length) !== -1;
+    };
+}
+
 // Create the server
 var app = express();
 app.use(bodyParser.json());
