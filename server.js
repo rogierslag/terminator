@@ -25,9 +25,7 @@ var server = app.listen(8543, function () {
 
 // Check whether we are running and if yes return ok
 function checkHealth(req, res) {
-	res.writeHead(200, 'OK');
-	res.write('Boom!');
-	res.end();
+	res.status(200).end('Boom!');
 	console.log('Processed successful healthcheck');
 	return;
 }
@@ -49,18 +47,18 @@ function checkPayload(req, res) {
 	}
 
 	if (config.get('repos').indexOf(req.body.pull_request.head.repo.full_name.toLowerCase()) > -1) {
-		console.log("Received a request for matching repo: " + req.body.pull_request.head.repo.full_name);
+		console.log("Received a request for matching repo: " + req.body.pull_request.head.repo.full_name + 'with id ' + req.body.pull_request.number);
 		console.log("Action is: " + req.body.action);
 		if (req.body.action === 'opened' || req.body.action === 'synchronize') {
 			return checkFiles(req, res, true, 'https://api.github.com/repos/' + req.body.pull_request.head.repo.full_name + '/pulls/' + req.body.pull_request.number + '/files');
 		} else {
-			res.writeHead(200, 'OK');
+			res.status(200).end();
 			res.end();
 			return;
 		}
 	} else {
 		console.log('Incoming request did not match any repository [' + req.body.pull_request.head.repo.full_name + ']');
-		res.writeHead(403, 'Forbidden');
+		res.status(403).end();
 		res.end();
 		return;
 	}
@@ -100,6 +98,9 @@ function checkFiles(req, res, currentValue, url) {
 						reportSuccess(req, res, false);
 					}
 				}
+			} else {
+				console.error('encountered an error [' + response.statusCode + ']: ' + error);
+				res.status(500).end();
 			}
 		}
 	);
@@ -133,12 +134,11 @@ function reportSuccess(req, res, result) {
 		body : body
 	}, function (error, response, body) {
 		if (!error && isValidResponseStatusCode(response.statusCode)) {
-			res.writeHead(200, 'OK');
+			res.status(200).end();
 			res.end();
 		} else {
-			console.log('Received an eror from github on url ' + url + ' with body ' + body + ': ' + error + ' (' + response.statusCode + ') with response ' + JSON.stringify(response));
-			res.writeHead(500, 'Internal server error');
-			res.end();
+			console.error('Received an eror from github on url ' + url + ' with body ' + body + ': ' + error + ' (' + response.statusCode + ') with response ' + JSON.stringify(response));
+			res.status(500).end();
 		}
 	});
 }
