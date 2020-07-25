@@ -50,7 +50,10 @@ function checkPayload(req, res) {
 		console.log("Received a request for matching repo: " + req.body.pull_request.head.repo.full_name + 'with id ' + req.body.pull_request.number);
 		console.log("Action is: " + req.body.action);
 		if (req.body.action === 'opened' || req.body.action === 'synchronize') {
-			return checkFiles(req, res, true, 'https://api.github.com/repos/' + req.body.pull_request.head.repo.full_name + '/pulls/' + req.body.pull_request.number + '/files');
+			setTimeout(function() {
+				checkFiles(req, res, true, 'https://api.github.com/repos/' + req.body.pull_request.head.repo.full_name + '/pulls/' + req.body.pull_request.number + '/files');
+			}, 5000);
+			return;
 		} else {
 			res.status(200).end();
 			res.end();
@@ -84,7 +87,7 @@ function checkFiles(req, res, currentValue, url) {
 							return val || item.endsWith(e);
 						}, false);
 					});
-				var nextValue = currentValue && filesWhichTrigger.length == 0;
+				var nextValue = currentValue && filesWhichTrigger.length === 0;
 				if (response.headers.link && parse(response.headers.link).next) {
 					// Go to next page
 					checkFiles(req, res, nextValue, parse(response.headers.link).next.url);
