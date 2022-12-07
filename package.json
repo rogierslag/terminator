@@ -1,18 +1,29 @@
 {
   "name": "terminator",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Determine whether your PR is ready for merge, based on the changed files",
-  "main": "server.js",
+  "main": "src/server.js",
   "dependencies": {
-    "body-parser": "^1.12.0",
-    "config": "^1.12.0",
-    "express": "^4.12.0",
-    "parse-link-header": "^0.4.1",
-    "request": "^2.50.0"
+    "config": "^3.3.8",
+    "koa": "^2.14.1",
+    "koa-bodyparser": "^4.3.0",
+    "koa-route": "^3.2.0",
+    "node-fetch": "2.6.7",
+    "parse-link-header": "^2.0.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.20.5",
+    "@babel/preset-env": "^7.20.2",
+    "eslint": "^7.32.0 || ^8.2.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.25.2"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint src",
+    "prebuild": "yarn lint --max-warnings 0",
+    "build": "babel src -d out"
   },
   "repository": {
     "type": "git",
