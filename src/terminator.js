@@ -78,7 +78,7 @@ export default async function checkPayload(ctx) {
 	const { pull_request, zen, action } = ctx.request.body;
 	const { head, number: pullRequestId } = pull_request;
 	const { repo, sha } = head;
-	const repoName = repo.full_name;
+	const repoName = repo.full_name.toLowerCase();
 
 	const isSupportedRepo = config.get('repos').includes(repoName);
 
