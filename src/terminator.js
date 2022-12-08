@@ -63,8 +63,11 @@ async function reportStatus(repoName, sha, pendingFiles) {
 
 	const response = await fetch(url, {
 		method: 'POST',
-		body,
-		headers: headers(),
+		body: JSON.stringify(body),
+		headers: {
+			...headers(),
+			'content-type': 'application/json',
+		},
 	});
 	if (!response.ok) {
 		throw new Error(`Unexpected status ${response.status} on ${url}`);
