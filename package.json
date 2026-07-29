@@ -4,8 +4,8 @@
   "description": "Determine whether your PR is ready for merge, based on the changed files",
   "main": "src/server.js",
   "dependencies": {
-    "config": "^3.3.8",
-    "koa": "^2.14.1",
+    "config": "^3.3.12",
+    "koa": "^2.16.4",
     "koa-bodyparser": "^4.3.0",
     "koa-route": "^3.2.0",
     "node-fetch": "2.6.7",
@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "@babel/cli": "^7.19.3",
-    "@babel/core": "^7.20.5",
+    "@babel/core": "^7.29.6",
     "@babel/preset-env": "^7.20.2",
     "eslint": "^7.32.0 || ^8.2.0",
     "eslint-config-airbnb-base": "^15.0.0",

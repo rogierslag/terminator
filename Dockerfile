@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:24-alpine
 MAINTAINER Rogier Slag
 
 EXPOSE 8543
@@ -16,7 +16,7 @@ RUN yarn install --frozen-lockfile
 COPY src ./src
 
 RUN yarn build
+RUN yarn install --production --frozen-lockfile --ignore-scripts --prefer-offline
 
 # Start it!
 CMD ["node", "out/server.js"]
-
