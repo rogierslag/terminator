@@ -8,7 +8,7 @@
     "koa": "^2.16.4",
     "koa-bodyparser": "^4.3.0",
     "koa-route": "^3.2.0",
-    "node-fetch": "2.6.7",
+    "node-fetch": "^2.7.0",
     "parse-link-header": "^2.0.0"
   },
   "devDependencies": {
