@@ -1,22 +1,27 @@
-FROM node:24-alpine
-MAINTAINER Rogier Slag
+FROM node:24.8-alpine
 
 EXPOSE 8543
 
-WORKDIR /opt/terminator
+RUN addgroup -S -g 1024 javascript
+RUN adduser -D -S -u 1024 -G javascript -h /opt/terminator javascript
+RUN mkdir -p /opt/terminator/config
+RUN chown -R javascript:javascript /opt/terminator
+
 # Set the config volume
-VOLUME /opt/terminator/config
+VOLUME ["/opt/terminator/config"]
+
+USER javascript:javascript
+WORKDIR /opt/terminator
 
 # Set the application
-COPY .babelrc .
-COPY .eslintrc.js .
-COPY package.json .
-COPY yarn.lock .
-RUN yarn install --frozen-lockfile
-COPY src ./src
+COPY --chown=javascript:javascript .babelrc .
+COPY --chown=javascript:javascript .eslintrc.js .
+COPY --chown=javascript:javascript package.json .
+COPY --chown=javascript:javascript yarn.lock .
+RUN yarn install --frozen-lockfile && yarn cache clean
+COPY --chown=javascript:javascript src ./src
 
 RUN yarn build
-RUN yarn install --production --frozen-lockfile --ignore-scripts --prefer-offline
 
 # Start it!
 CMD ["node", "out/server.js"]
