@@ -1,7 +1,7 @@
 import Koa from 'koa';
 import router from 'koa-route';
 import bodyparser from 'koa-bodyparser';
-import terminator from './terminator';
+import terminator from './terminator.js';
 
 // Create the server
 const app = new Koa();
