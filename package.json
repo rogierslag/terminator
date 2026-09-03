@@ -3,27 +3,26 @@
   "version": "1.0.0",
   "description": "Determine whether your PR is ready for merge, based on the changed files",
   "main": "src/server.js",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
   "dependencies": {
-    "config": "^3.3.12",
-    "koa": "^2.16.4",
-    "koa-bodyparser": "^4.3.0",
-    "koa-route": "^3.2.0",
-    "node-fetch": "^2.7.0",
+    "config": "^5.0.1",
+    "koa": "^3.2.1",
+    "koa-bodyparser": "^4.4.1",
+    "koa-route": "^4.0.1",
     "parse-link-header": "^2.0.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.19.3",
-    "@babel/core": "^7.29.6",
-    "@babel/preset-env": "^7.20.2",
-    "eslint": "^7.32.0 || ^8.2.0",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.25.2"
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.9.1",
+    "globals": "^17.12.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint src",
-    "prebuild": "yarn lint --max-warnings 0",
-    "build": "babel src -d out"
+    "build": "yarn lint --max-warnings 0"
   },
   "repository": {
     "type": "git",

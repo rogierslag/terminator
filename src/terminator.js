@@ -1,6 +1,5 @@
 // Determine whether to do something with the payload
 import config from 'config';
-import fetch from 'node-fetch';
 import parse from 'parse-link-header';
 
 const supportedActions = ['opened', 'synchronize'];

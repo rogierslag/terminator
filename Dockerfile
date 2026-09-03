@@ -1,4 +1,4 @@
-FROM node:24.8-alpine
+FROM node:24.20.0-alpine
 
 EXPOSE 8543
 
@@ -14,8 +14,7 @@ USER javascript:javascript
 WORKDIR /opt/terminator
 
 # Set the application
-COPY --chown=javascript:javascript .babelrc .
-COPY --chown=javascript:javascript .eslintrc.js .
+COPY --chown=javascript:javascript eslint.config.js .
 COPY --chown=javascript:javascript package.json .
 COPY --chown=javascript:javascript yarn.lock .
 RUN yarn install --frozen-lockfile && yarn cache clean
@@ -24,4 +23,4 @@ COPY --chown=javascript:javascript src ./src
 RUN yarn build
 
 # Start it!
-CMD ["node", "out/server.js"]
+CMD ["node", "src/server.js"]
