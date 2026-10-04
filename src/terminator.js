@@ -14,13 +14,15 @@ function headers() {
 }
 
 function validatePullRequest(repoName, pullRequestId) {
-	return validatePendingFiles(`https://api.github.com/repos/${repoName}/pulls/${pullRequestId}/files`);
+	return validatePendingFiles(`/repos/${repoName}/pulls/${pullRequestId}/files`);
 }
 
 // Determine whether the PR contains any files that require a pending status by recursing over the PR
-async function validatePendingFiles(url) {
+async function validatePendingFiles(path, page = 1) {
+	const url = `https://api.github.com${path}?page=${page}`;
 	const response = await fetch(url, {
 		headers: headers(),
+		redirect: 'error',
 	});
 	if (!response.ok) {
 		throw new Error(`Unexpected status ${response.status} on ${url}`);
@@ -31,7 +33,7 @@ async function validatePendingFiles(url) {
 	const filesWhichTrigger = fileNames.filter((item) => config.get('files').some((file) => item.endsWith(file)));
 
 	const hasPendingFiles = filesWhichTrigger.length > 0;
-	const linkHeader = response.headers.has('link') && parse(response.headers.get('link')).next;
+	const linkHeader = parse(response.headers.get('link'))?.next;
 	if (!linkHeader) {
 		return hasPendingFiles;
 	}
@@ -39,7 +41,15 @@ async function validatePendingFiles(url) {
 	if (hasPendingFiles) {
 		return true;
 	}
-	return validatePendingFiles(linkHeader.url);
+	// A Link header may select the next page, but never the request destination.
+	const next = new URL(linkHeader.url);
+	const nextPage = Number(next.searchParams.get('page'));
+	if (next.origin !== 'https://api.github.com' || next.pathname !== path ||
+		next.username || next.password || next.hash ||
+		!Number.isSafeInteger(nextPage) || nextPage <= page) {
+		throw new Error('Invalid GitHub pagination link');
+	}
+	return validatePendingFiles(path, nextPage);
 }
 
 async function reportStatus(repoName, sha, pendingFiles) {
@@ -62,6 +72,7 @@ async function reportStatus(repoName, sha, pendingFiles) {
 
 	const response = await fetch(url, {
 		method: 'POST',
+		redirect: 'error',
 		body: JSON.stringify(body),
 		headers: {
 			...headers(),
@@ -74,22 +85,30 @@ async function reportStatus(repoName, sha, pendingFiles) {
 }
 
 export default async function checkPayload(ctx) {
-	const { pull_request, zen, action } = ctx.request.body;
-	const { head, number: pullRequestId } = pull_request;
-	const { repo, sha } = head;
-	const repoName = repo.full_name.toLowerCase();
+	const { pull_request, zen, action } = ctx.request.body ?? {};
+	if (zen) {
+		ctx.status = 200;
+		ctx.body = 'Well Github, I love you too!';
+		return;
+	}
 
-	const isSupportedRepo = config.get('repos').includes(repoName);
-
-	if (!isSupportedRepo || !supportedActions.includes(action)) {
-		ctx.body = `Unsupported update: ${action} for ${repoName}`;
+	const fullName = pull_request?.head?.repo?.full_name;
+	// Select the repository from trusted configuration, not from webhook input.
+	const repoName = config.get('repos').find((name) =>
+		typeof fullName === 'string' && name === fullName.toLowerCase());
+	if (!repoName || !supportedActions.includes(action)) {
+		ctx.body = 'Unsupported update';
 		ctx.status = 200;
 		return;
 	}
 
-	if (zen) {
-		ctx.status = 200;
-		ctx.body = 'Well Github, I love you too!';
+	const pullRequestId = pull_request.number;
+	const sha = pull_request.head.sha;
+	if (!/^[A-Za-z0-9_-]+\/[A-Za-z0-9_.-]+$/.test(repoName) ||
+		!Number.isSafeInteger(pullRequestId) || pullRequestId <= 0 ||
+		typeof sha !== 'string' || !/^[a-fA-F0-9]{40}$/.test(sha)) {
+		ctx.status = 400;
+		ctx.body = 'Invalid pull request';
 		return;
 	}
 

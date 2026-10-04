@@ -19,6 +19,7 @@ COPY --chown=javascript:javascript package.json .
 COPY --chown=javascript:javascript yarn.lock .
 RUN yarn install --frozen-lockfile && yarn cache clean
 COPY --chown=javascript:javascript src ./src
+COPY --chown=javascript:javascript test ./test
 
 RUN yarn build
 
