@@ -14,7 +14,7 @@ function headers() {
 }
 
 function validatePullRequest(repoName, pullRequestId) {
-	return validatePendingFiles(`/repos/${repoName}/pulls/${pullRequestId}/files`);
+	return validatePendingFiles(`/repos/${repoName}/pulls/${encodeURIComponent(pullRequestId)}/files`);
 }
 
 // Determine whether the PR contains any files that require a pending status by recursing over the PR
